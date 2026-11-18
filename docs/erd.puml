@@ -1,0 +1,36 @@
+@startuml
+hide circle
+skinparam linetype ortho
+entity "User" as users {
+  * id : INTEGER <<PK>>
+  --
+  name : VARCHAR(120)
+  role : VARCHAR(20)
+  username : VARCHAR(80) <<UNIQUE>>
+  password_hash : VARCHAR(255)
+}
+entity "Course" as courses {
+  * id : INTEGER <<PK>>
+  --
+  code : VARCHAR(20) <<UNIQUE>>
+  name : VARCHAR(160)
+  max_students : INTEGER
+  current_enrolled : INTEGER
+}
+entity "Schedule" as schedules {
+  * id : INTEGER <<PK>>
+  --
+  course_id : INTEGER <<FK>>
+  day : INTEGER
+  shift : VARCHAR(20)
+}
+entity "Enrollment" as enrollments {
+  * id : INTEGER <<PK>>
+  --
+  student_id : INTEGER <<FK>>
+  course_id : INTEGER <<FK>>
+}
+users ||--o{ enrollments : student_id
+courses ||--o{ enrollments : course_id
+courses ||--o{ schedules : course_id
+@enduml

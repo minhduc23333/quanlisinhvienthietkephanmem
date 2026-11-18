@@ -1,0 +1,22 @@
+@startuml
+actor "Sinh viên" as S
+participant "Giao diện UI" as UI
+participant "API Gateway (FastAPI)" as GW
+participant "Enrollment Service (router)" as ES
+database "MySQL" as DB
+S -> UI: Chọn Đăng ký môn
+UI -> GW: POST /enrollments {student_id,course_id}
+GW -> ES: Chuyển yêu cầu
+ES -> DB: Kiểm tra trùng lịch và lớp đầy
+DB --> ES: Dữ liệu lịch + sĩ số
+alt Trùng lịch hoặc đầy
+  ES --> GW: HTTP 400 + detail
+  GW --> UI: Hiển thị lỗi
+else Hợp lệ
+  ES -> DB: INSERT Enrollment, UPDATE Course
+  DB --> ES: Commit thành công
+  ES --> GW: HTTP 201
+  GW --> UI: Đăng ký thành công
+end
+UI --> S: Cập nhật danh sách / TKB
+@enduml

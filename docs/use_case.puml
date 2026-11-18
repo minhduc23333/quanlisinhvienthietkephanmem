@@ -1,0 +1,25 @@
+@startuml
+left to right direction
+actor "Sinh viên" as SV
+actor "Quản trị (demo API)" as AD
+rectangle "EduCourse" {
+  usecase "Đăng nhập" as A
+  usecase "Đăng ký tài khoản" as B
+  usecase "Xem danh sách môn" as C
+  usecase "Xem lịch môn" as D
+  usecase "Đăng ký học phần" as E
+  usecase "Kiểm tra trùng lịch" as F
+  usecase "Xem thời khóa biểu" as G
+  usecase "Hủy đăng ký" as H
+  usecase "Thêm lịch qua API" as I
+}
+SV --> A
+SV --> B
+SV --> C
+SV --> D
+SV --> E
+SV --> G
+SV --> H
+E ..> F : <<include>>
+AD --> I
+@enduml
