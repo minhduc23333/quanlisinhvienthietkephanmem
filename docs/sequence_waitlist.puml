@@ -1,0 +1,28 @@
+@startuml
+actor "SV A (đang học)" as A
+actor "SV B (đang chờ)" as B
+participant "Giao diện UI" as UI
+participant "Enrollment Service" as ES
+database "MySQL" as DB
+B -> UI: Lớp đầy → Vào danh sách chờ
+UI -> ES: POST /waitlist
+ES -> DB: Kiểm tra điều kiện, INSERT WaitlistEntry
+ES --> UI: 201 vị trí #1
+A -> UI: Hủy học phần
+UI -> ES: DELETE /enrollments/{A}/{course}
+ES -> DB: SELECT ... FOR UPDATE (khóa học phần)
+ES -> DB: DELETE Enrollment(A), current_enrolled - 1
+loop Theo thứ tự hàng chờ, đến khi hết chỗ
+  ES -> DB: Kiểm tra người chờ (tài khoản, tiên quyết, trùng lịch)
+  alt Đủ điều kiện
+    ES -> DB: INSERT Enrollment(B), DELETE WaitlistEntry(B), current_enrolled + 1
+  else Chưa đủ điều kiện
+    ES -> ES: Bỏ qua, giữ trong hàng chờ
+  end
+end
+ES -> DB: COMMIT
+ES --> UI: 200
+B -> UI: Làm mới / quay lại tab
+UI -> ES: GET /enrollments/{B}
+ES --> UI: Có học phần mới + thông báo
+@enduml

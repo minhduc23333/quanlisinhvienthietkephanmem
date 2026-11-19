@@ -2,16 +2,20 @@
 actor "Sinh viên" as S
 participant "Giao diện UI" as UI
 participant "API Gateway (FastAPI)" as GW
-participant "Enrollment Service (router)" as ES
+participant "Enrollment Service" as ES
 database "MySQL" as DB
 S -> UI: Chọn Đăng ký môn
 UI -> GW: POST /enrollments {student_id,course_id}
 GW -> ES: Chuyển yêu cầu
-ES -> DB: Kiểm tra trùng lịch và lớp đầy
-DB --> ES: Dữ liệu lịch + sĩ số
-alt Trùng lịch hoặc đầy
+ES -> DB: SELECT ... FOR UPDATE (khóa học phần)
+ES -> DB: Kiểm tra đã đăng ký/hoàn thành, môn tiên quyết, trùng lịch
+DB --> ES: Dữ liệu đăng ký + lịch + tiên quyết
+alt Chưa đủ tiên quyết, trùng lịch hoặc đã đăng ký
   ES --> GW: HTTP 400 + detail
   GW --> UI: Hiển thị lỗi
+else Lớp đã đầy
+  ES --> GW: HTTP 400 "đã đủ sĩ số"
+  GW --> UI: Gợi ý vào danh sách chờ (POST /waitlist)
 else Hợp lệ
   ES -> DB: INSERT Enrollment, UPDATE Course
   DB --> ES: Commit thành công

@@ -1,7 +1,7 @@
 @startuml
 left to right direction
 actor "Sinh viên" as SV
-actor "Quản trị (demo API)" as AD
+actor "Quản trị viên" as AD
 rectangle "EduCourse" {
   usecase "Đăng nhập" as A
   usecase "Đăng ký tài khoản" as B
@@ -9,9 +9,18 @@ rectangle "EduCourse" {
   usecase "Xem lịch môn" as D
   usecase "Đăng ký học phần" as E
   usecase "Kiểm tra trùng lịch" as F
+  usecase "Kiểm tra sĩ số" as F2
+  usecase "Kiểm tra môn tiên quyết" as F3
   usecase "Xem thời khóa biểu" as G
   usecase "Hủy đăng ký" as H
-  usecase "Thêm lịch qua API" as I
+  usecase "Vào danh sách chờ" as W
+  usecase "Rời danh sách chờ" as W2
+  usecase "Tự xếp người chờ vào lớp" as P
+  usecase "Quản lý học phần và sĩ số tối đa" as I
+  usecase "Quản lý lịch học" as J
+  usecase "Thiết lập môn tiên quyết" as K
+  usecase "Ghi nhận học phần đã hoàn thành" as L
+  usecase "Khóa / mở khóa / xóa sinh viên" as M
 }
 SV --> A
 SV --> B
@@ -20,6 +29,19 @@ SV --> D
 SV --> E
 SV --> G
 SV --> H
+SV --> W
+SV --> W2
 E ..> F : <<include>>
+E ..> F2 : <<include>>
+E ..> F3 : <<include>>
+W ..> F : <<include>>
+W ..> F3 : <<include>>
+W <.. E : <<extend>> (lớp đầy)
+H ..> P : <<include>>
+I ..> P : <<extend>> (tăng sĩ số)
 AD --> I
+AD --> J
+AD --> K
+AD --> L
+AD --> M
 @enduml

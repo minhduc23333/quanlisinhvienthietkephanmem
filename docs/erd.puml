@@ -7,13 +7,18 @@ entity "User" as users {
   name : VARCHAR(120)
   role : VARCHAR(20)
   username : VARCHAR(80) <<UNIQUE>>
+  email : VARCHAR(254) <<UNIQUE>>
   password_hash : VARCHAR(255)
+  is_locked : BOOLEAN
 }
 entity "Course" as courses {
   * id : INTEGER <<PK>>
   --
   code : VARCHAR(20) <<UNIQUE>>
   name : VARCHAR(160)
+  lecturer : VARCHAR(140)
+  start_date : VARCHAR(10)
+  end_date : VARCHAR(10)
   max_students : INTEGER
   current_enrolled : INTEGER
 }
@@ -23,6 +28,9 @@ entity "Schedule" as schedules {
   course_id : INTEGER <<FK>>
   day : INTEGER
   shift : VARCHAR(20)
+  start_time : VARCHAR(5)
+  end_time : VARCHAR(5)
+  room : VARCHAR(50)
 }
 entity "Enrollment" as enrollments {
   * id : INTEGER <<PK>>
@@ -30,7 +38,31 @@ entity "Enrollment" as enrollments {
   student_id : INTEGER <<FK>>
   course_id : INTEGER <<FK>>
 }
+entity "CoursePrerequisite" as course_prerequisites {
+  * course_id : INTEGER <<PK,FK>>
+  * prerequisite_id : INTEGER <<PK,FK>>
+}
+entity "WaitlistEntry" as waitlist {
+  * id : INTEGER <<PK>>
+  --
+  student_id : INTEGER <<FK>>
+  course_id : INTEGER <<FK>>
+  created_at : DATETIME
+}
+entity "CompletedCourse" as completed_courses {
+  * id : INTEGER <<PK>>
+  --
+  student_id : INTEGER <<FK>>
+  course_id : INTEGER <<FK>>
+  completed_at : DATETIME
+}
 users ||--o{ enrollments : student_id
 courses ||--o{ enrollments : course_id
 courses ||--o{ schedules : course_id
+users ||--o{ waitlist : student_id
+courses ||--o{ waitlist : course_id
+users ||--o{ completed_courses : student_id
+courses ||--o{ completed_courses : course_id
+courses ||--o{ course_prerequisites : course_id
+courses ||--o{ course_prerequisites : prerequisite_id
 @enduml

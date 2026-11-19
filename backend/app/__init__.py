@@ -1,0 +1,1 @@
+"""EduCourse backend package."""
